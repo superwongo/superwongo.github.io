@@ -354,37 +354,29 @@ EOJS
 
 	在`mongodb1`主机`/vagrant_data/ansible/templates`目录下创建`mongodb-init-db.sh`用于docker容器创建后通过`db.createUser`命令创建用户信息，其中也使用到了`ansible`中的`jinja2`模板语言。
 
-<code>
 ```bash
 #!/bin/bash
 
-mongo &#123;&#123; MONGO_INITDB_DATABASE &#125;&#125; <<-EOJS
+mongo `&#123;&#123;` MONGO_INITDB_DATABASE `&#125;&#125`; <<-EOJS
     db.createUser(&#123;
-        user: '&#123;&#123; MONGO_INITDB_ROOT_USERNAME &#125;&#125;', 
-        pwd: '&#123;&#123; MONGO_INITDB_ROOT_PASSWORD &#125;&#125;', 
-        roles: [&#123; role: 'root', db: '&#123;&#123; MONGO_INITDB_DATABASE &#125;&#125;' &#125;] 
-    &#125;);
+        user: '`&#123;&#123;` MONGO_INITDB_ROOT_USERNAME &#125;&#125;', 
+        pwd: '`&#123;&#123;` MONGO_INITDB_ROOT_PASSWORD &#125;&#125;', 
+        roles: [`&#123;` role: 'root', db: '`&#123;&#123;` MONGO_INITDB_DATABASE `&#125;&#125;`' `&#125;`] 
+    `&#125;`);
 EOJS
 
-mongo &#123;&#123; MONGO_INITDB_DATABASE &#125;&#125; -u &#123;&#123; MONGO_INITDB_ROOT_USERNAME &#125;&#125; -p &#123;&#123; MONGO_INITDB_ROOT_PASSWORD &#125;&#125; <<-EOJS
-use &#123;&#123; MONGO_DATABASE &#125;&#125;;
-db.createUser(&#123; 
-    user: '&#123;&#123; MONGO_USER &#125;&#125;', 
-    pwd: '&#123;&#123; MONGO_PWD &#125;&#125;', 
-    roles: [&#123; role: 'readWrite', db: '&#123;&#123; MONGO_DATABASE &#125;&#125;' &#125;] 
-&#125;);
+mongo `&#123;&#123;` MONGO_INITDB_DATABASE `&#125;&#125;` -u `&#123;&#123`; MONGO_INITDB_ROOT_USERNAME `&#125;&#125;` -p `&#123;&#123;` MONGO_INITDB_ROOT_PASSWORD `&#125;&#125;` <<-EOJS
+use `&#123;&#123;` MONGO_DATABASE `&#125;&#125;`;
+db.createUser(`&#123;` 
+    user: '`&#123;&#123;` MONGO_USER `&#125;&#125;`', 
+    pwd: '`&#123;&#123;` MONGO_PWD `&#125;&#125;`', 
+    roles: [`&#123;` role: 'readWrite', db: '`&#123;&#123;` MONGO_DATABASE `&#125;&#125;`' `&#125;`] 
+`&#125;`);
 EOJS
 ```
-</code>
-
-
-
-
-
 
 	模板转义（模板上传后自动转义）后文件内容如下：
 
-<code>
 ```bash
 #!/bin/bash
 
@@ -406,7 +398,6 @@ db.createUser(&#123;
 &#125;);
 EOJS
 ```
-</code>
 
 ### 3.7. 编写docker安装编排脚本
 
