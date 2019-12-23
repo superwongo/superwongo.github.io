@@ -265,13 +265,13 @@ qihu_site_verification:
 
 # 友情鏈接界面設置
 Flink:
-  headline: 友情鏈接
-  info_headline: 我的Blog資料
-  name: Blog 名字： JerryC
-  address: Blog 地址： https://jerryc.me/
-  avatar: Blog 頭像： https://jerryc.me/img/avatar.png
-  info: Blog 簡介： 今日事,今日畢
-  comment: 如果需要交換友鏈,請留言
+  headline: 友情连接
+  info_headline: 我的Blog资料
+  name: Blog 名字： SuperBlog
+  address: Blog 地址： https://superwongo.github.io/
+  avatar: Blog 头像： https://superwongo.github.io/img/avatar.png
+  info: Blog 简介： 今日事,今日毕
+  comment: 如果需要交换友链,请留言
 
 # 打賞按鈕
 reward:
@@ -282,7 +282,7 @@ reward:
         text: 微信
     - itemlist:
         img: /img/alipay.jpg
-        text: 支付寶
+        text: 支付宝
 
 # 推薦文章
 related_post:
@@ -441,7 +441,7 @@ subtitle:
   source: false
   # (如果有英文逗號' , '，請使用轉義字符 &#44;)
   sub:
-    - 今日事&#44;今日畢
+    - 今日事&#44;今日毕
     - Never put off till tomorrow what you can do today
 
 ####    側邊欄    ####
@@ -462,7 +462,7 @@ aside:
 
 # 網站公告
 announcement:
-  content: 感謝訪問本站，若喜歡請收藏 ^_^
+  content: 感谢访问本站，若喜欢请收藏 ^_^
 
 # busuanzi count for PV / UV in site
 # 訪問人數
