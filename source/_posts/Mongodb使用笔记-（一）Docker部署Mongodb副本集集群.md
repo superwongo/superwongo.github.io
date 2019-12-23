@@ -173,27 +173,27 @@ ansible_ssh_pass=vagrant
 
 ```bash
 [root@localhost ansible]# ansible mongodb -m ping
-192.168.33.10 | SUCCESS => {
-    "ansible_facts": {
+192.168.33.10 | SUCCESS => &#123;
+    "ansible_facts": &#123;
         "discovered_interpreter_python": "/usr/bin/python"
-    }, 
+    &#125;, 
     "changed": false, 
     "ping": "pong"
-}
-192.168.33.12 | SUCCESS => {
-    "ansible_facts": {
+&#125;
+192.168.33.12 | SUCCESS => &#123;
+    "ansible_facts": &#123;
         "discovered_interpreter_python": "/usr/bin/python"
-    }, 
+    &#125;, 
     "changed": false, 
     "ping": "pong"
-}
-192.168.33.11 | SUCCESS => {
-    "ansible_facts": {
+&#125;
+192.168.33.11 | SUCCESS => &#123;
+    "ansible_facts": &#123;
         "discovered_interpreter_python": "/usr/bin/python"
-    }, 
+    &#125;, 
     "changed": false, 
     "ping": "pong"
-}
+&#125;
 ```
 
 ### 3.3. 编写ansible部署脚本
@@ -203,11 +203,11 @@ ansible_ssh_pass=vagrant
 	其中，需要说明的内容如下：
 
 1. 通过`hosts: all`设置作用于所有已配置的主机，配置文件为`/etc/ansible/hosts`；
-2. 通过`vars`设置ansible部署过程中的环境变量，ansible脚本中通过双大括号`{{}}`方式引用；
+2. 通过`vars`设置ansible部署过程中的环境变量，ansible脚本中通过双大括号`&#123;&#123;&#125;&#125;`方式引用；
 3. 通过`tasks`设置ansible部署的步骤；
 4. 通过`file`模块创建部署服务器上的BASE目录，上传文件会默认在与此配置文件同级的`files`目录中查找；
 5. 通过`template`模块上传模板文件到部署服务器，上传的模板文件会默认在与此配置文件同级的`templates`目录中查找；
-6. 通过`copy`模块上传文件到部署服务器，与`template`的区别在于`template`上传文件时，会对文件中的双大括号`{{}}`方式引用的参数进行自动填充；
+6. 通过`copy`模块上传文件到部署服务器，与`template`的区别在于`template`上传文件时，会对文件中的双大括号`&#123;&#123;&#125;&#125;`方式引用的参数进行自动填充；
 7. 通过`command`模块在部署服务器上执行`shell`命令，执行的命令中`docker-compose -f docker-compose.yml down`用于根据`docker-compose.yml`的配置清除所有已安装的docker容器，`docker-compose -f docker-compose.yml up -d`则是根据`docker-compose.yml`的配置创建docker容器，`docker exec -it mongodb /bin/bash /opt/init-rs.sh`用于执行docker容器的`shell`脚本；
 8. 通过`groups.mongodb`可以获取配置文件中`mongodb`组中的所有主机host信息，`inventory_hostname`用于获取`ansible`当前部署的服务器的host信息，而`groups.mongodb.index(inventory_hostname)`则获取当前部署主机在配置的`mongodb`组中的排列顺序，以0开始。即只有第一个配置的服务器才进行副本集配置，配置后其将会作为`primary`主机。
 9. 通过`wait_for`设置等到10秒后检测mongdb是否启动完成，因为在设置副本集后，mongodb进行初始化，初始化完成前创建用户信息，会提示`not master`非master主机错误。
@@ -242,16 +242,16 @@ ansible_ssh_pass=vagrant
   tasks:
     - name: 创建BASE目录
       file:
-        path: "{{ item }}"
+        path: "&#123;&#123; item &#125;&#125;"
         state: directory
       with_items:
-        - "{{ MONGO_BASE_DIR }}/db"
-        - "{{ MONGO_BASE_DIR }}/config"
+        - "&#123;&#123; MONGO_BASE_DIR &#125;&#125;/db"
+        - "&#123;&#123; MONGO_BASE_DIR &#125;&#125;/config"
 
     - name: 上传mongodb初始化脚本
       template:
-        src: "{{ item }}"
-        dest: "{{ MONGO_BASE_DIR }}/config/{{ item }}"
+        src: "&#123;&#123; item &#125;&#125;"
+        dest: "&#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/&#123;&#123; item &#125;&#125;"
         mode: 0755
       with_items:
         - mongodb-init-rs.sh
@@ -260,7 +260,7 @@ ansible_ssh_pass=vagrant
     - name: 上传mongodb秘钥文件
       copy:
         src: mongodb-keyfile
-        dest: "{{ MONGO_BASE_DIR }}/config/mongodb-keyfile"
+        dest: "&#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/mongodb-keyfile"
         mode: 0600
         owner: "999"
 
@@ -308,27 +308,27 @@ ansible_ssh_pass=vagrant
 
 	在`mongodb1`主机`/vagrant_data/ansible/templates`目录下创建`mongodb-init-rs.sh`用于docker容器创建后，通过`rs.initiate`命令设置副本集信息。其中用到了`ansible`中的`jinja2`模板语言，说明如下：
 
-1. `"{{ MONGO_REPL_SET }}"`是用于获取ansible全局参数`MONGO_REPL_SET `的值；
-2. `{% for host in groups.mongodb -%}`和`{% endfor %}`为`for`循环语句，即循环`mongodb `组中所有的主机host信息；
-3. `{% if groups.mongodb.index(host)|int + 1 < groups.mongodb|length -%}`、`{% else -%}`和`{% endif -%}`用于判断当前循环的主机是否为最后一个主机，如果为最后一个主机，则最后不加`，`。
+1. `"&#123;&#123; MONGO_REPL_SET &#125;&#125;"`是用于获取ansible全局参数`MONGO_REPL_SET `的值；
+2. `&#123;% for host in groups.mongodb -%&#125;`和`&#123;% endfor %&#125;`为`for`循环语句，即循环`mongodb `组中所有的主机host信息；
+3. `&#123;% if groups.mongodb.index(host)|int + 1 < groups.mongodb|length -%&#125;`、`&#123;% else -%&#125;`和`&#123;% endif -%&#125;`用于判断当前循环的主机是否为最后一个主机，如果为最后一个主机，则最后不加`，`。
 
 ```bash
 #!/bin/bash
 
 mongo <<-EOJS
-    rs.initiate({
-        _id:"{{ MONGO_REPL_SET }}", 
+    rs.initiate(&#123;
+        _id:"&#123;&#123; MONGO_REPL_SET &#125;&#125;", 
         members:[
-            {% for host in groups.mongodb -%}
-            {% if groups.mongodb.index(host)|int + 1 < groups.mongodb|length -%}
-            { _id: {{ groups.mongodb.index(host) }}, host: "{{ host }}:{{ MONGO_PORT }}" }, 
-            {% else -%}
-            { _id: {{ groups.mongodb.index(host) }}, host: "{{ host }}:{{ MONGO_PORT }}" }
-            {% endif -%}
-            {% endfor %}
+            &#123;% for host in groups.mongodb -%&#125;
+            &#123;% if groups.mongodb.index(host)|int + 1 < groups.mongodb|length -%&#125;
+            &#123; _id: &#123;&#123; groups.mongodb.index(host) &#125;&#125;, host: "&#123;&#123; host &#125;&#125;:&#123;&#123; MONGO_PORT &#125;&#125;" &#125;, 
+            &#123;% else -%&#125;
+            &#123; _id: &#123;&#123; groups.mongodb.index(host) &#125;&#125;, host: "&#123;&#123; host &#125;&#125;:&#123;&#123; MONGO_PORT &#125;&#125;" &#125;
+            &#123;% endif -%&#125;
+            &#123;% endfor %&#125;
 
         ]
-    });
+    &#125;);
 EOJS
 ```
 
@@ -338,15 +338,15 @@ EOJS
 #!/bin/bash
 
 mongo <<-EOJS
-    rs.initiate({
+    rs.initiate(&#123;
         _id:"replica-set-test", 
         members:[
-            { _id: 0, host: "192.168.33.10:27017" }, 
-            { _id: 1, host: "192.168.33.11:27017" }, 
-            { _id: 2, host: "192.168.33.12:27017" }
+            &#123; _id: 0, host: "192.168.33.10:27017" &#125;, 
+            &#123; _id: 1, host: "192.168.33.11:27017" &#125;, 
+            &#123; _id: 2, host: "192.168.33.12:27017" &#125;
             
         ]
-    });
+    &#125;);
 EOJS
 ```
 
@@ -357,21 +357,21 @@ EOJS
 ```bash
 #!/bin/bash
 
-mongo {{ MONGO_INITDB_DATABASE }} <<-EOJS
-    db.createUser({
-        user: '{{ MONGO_INITDB_ROOT_USERNAME }}', 
-        pwd: '{{ MONGO_INITDB_ROOT_PASSWORD }}', 
-        roles: [{ role: 'root', db: '{{ MONGO_INITDB_DATABASE }}' }] 
-    });
+mongo &#123;&#123; MONGO_INITDB_DATABASE &#125;&#125; <<-EOJS
+    db.createUser(&#123;
+        user: '&#123;&#123; MONGO_INITDB_ROOT_USERNAME &#125;&#125;', 
+        pwd: '&#123;&#123; MONGO_INITDB_ROOT_PASSWORD &#125;&#125;', 
+        roles: [&#123; role: 'root', db: '&#123;&#123; MONGO_INITDB_DATABASE &#125;&#125;' &#125;] 
+    &#125;);
 EOJS
 
-mongo {{ MONGO_INITDB_DATABASE }} -u {{ MONGO_INITDB_ROOT_USERNAME }} -p {{ MONGO_INITDB_ROOT_PASSWORD }} <<-EOJS
-use {{ MONGO_DATABASE }};
-db.createUser({ 
-    user: '{{ MONGO_USER }}', 
-    pwd: '{{ MONGO_PWD }}', 
-    roles: [{ role: 'readWrite', db: '{{ MONGO_DATABASE }}' }] 
-});
+mongo &#123;&#123; MONGO_INITDB_DATABASE &#125;&#125; -u &#123;&#123; MONGO_INITDB_ROOT_USERNAME &#125;&#125; -p &#123;&#123; MONGO_INITDB_ROOT_PASSWORD &#125;&#125; <<-EOJS
+use &#123;&#123; MONGO_DATABASE &#125;&#125;;
+db.createUser(&#123; 
+    user: '&#123;&#123; MONGO_USER &#125;&#125;', 
+    pwd: '&#123;&#123; MONGO_PWD &#125;&#125;', 
+    roles: [&#123; role: 'readWrite', db: '&#123;&#123; MONGO_DATABASE &#125;&#125;' &#125;] 
+&#125;);
 EOJS
 ```
 
@@ -382,20 +382,20 @@ EOJS
 
 mongo admin <<-EOJS
     rs.status();
-    db.createUser({
+    db.createUser(&#123;
         user: 'root', 
         pwd: '123456', 
-        roles: [{ role: 'root', db: 'admin' }] 
-    });
+        roles: [&#123; role: 'root', db: 'admin' &#125;] 
+    &#125;);
 EOJS
 
 mongo admin -u root -p 123456 <<-EOJS
 use replicaSetTest;
-db.createUser({ 
+db.createUser(&#123; 
     user: 'test', 
     pwd: '123456', 
-    roles: [{ role: 'readWrite', db: 'replicaSetTest' }] 
-});
+    roles: [&#123; role: 'readWrite', db: 'replicaSetTest' &#125;] 
+&#125;);
 ```
 
 ### 3.7. 编写docker安装编排脚本
@@ -408,35 +408,35 @@ db.createUser({
 version: '3.1'
 
 services:
-  {% if groups.mongodb.index(inventory_hostname) == 0 -%}
+  &#123;% if groups.mongodb.index(inventory_hostname) == 0 -%&#125;
   mongo:
     image: docker.io/mongo
     container_name: mongodb
     restart: always
     ports:
-      - {{ MONGO_PORT }}:27017
+      - &#123;&#123; MONGO_PORT &#125;&#125;:27017
     volumes:
-      - {{ MONGO_BASE_DIR }}/db:/data/db
-      - {{ MONGO_BASE_DIR }}/config/mongodb-init-rs.sh:/opt/init-rs.sh
-      - {{ MONGO_BASE_DIR }}/config/mongodb-init-db.sh:/opt/init-db.sh
-      - {{ MONGO_BASE_DIR }}/config/mongodb-keyfile:{{ MONGO_KEY_FILE }}
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/db:/data/db
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/mongodb-init-rs.sh:/opt/init-rs.sh
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/mongodb-init-db.sh:/opt/init-db.sh
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/mongodb-keyfile:&#123;&#123; MONGO_KEY_FILE &#125;&#125;
       - /etc/localtime:/etc/localtime
     command:
-      mongod --dbpath /data/db --smallfiles --replSet {{ MONGO_REPL_SET }} --keyFile {{ MONGO_KEY_FILE }} --auth
-  {% else -%}
+      mongod --dbpath /data/db --smallfiles --replSet &#123;&#123; MONGO_REPL_SET &#125;&#125; --keyFile &#123;&#123; MONGO_KEY_FILE &#125;&#125; --auth
+  &#123;% else -%&#125;
   mongodb:
     image: docker.io/mongo
     container_name: mongodb
     restart: always
     ports:
-      - {{ MONGO_PORT }}:27017
+      - &#123;&#123; MONGO_PORT &#125;&#125;:27017
     volumes:
-      - {{ MONGO_BASE_DIR }}/db:/data/db
-      - {{ MONGO_BASE_DIR }}/config/mongodb-keyfile:{{ MONGO_KEY_FILE }}
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/db:/data/db
+      - &#123;&#123; MONGO_BASE_DIR &#125;&#125;/config/mongodb-keyfile:&#123;&#123; MONGO_KEY_FILE &#125;&#125;
       - /etc/localtime:/etc/localtime
     command:
-      mongod --dbpath /data/db --smallfiles --replSet {{ MONGO_REPL_SET }} --keyFile {{ MONGO_KEY_FILE }} --auth
-  {% endif %}
+      mongod --dbpath /data/db --smallfiles --replSet &#123;&#123; MONGO_REPL_SET &#125;&#125; --keyFile &#123;&#123; MONGO_KEY_FILE &#125;&#125; --auth
+  &#123;% endif %&#125;
 ```
 
 	主节点模板转义（模板上传后自动转义）后文件内容如下：
@@ -615,7 +615,7 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 [root@localhost ~]# docker exec -it mongodb mongo
 MongoDB shell version v4.2.0
 connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-Implicit session: session { "id" : UUID("e0037f48-d93d-4796-b96e-19fbcd1125da") }
+Implicit session: session &#123; "id" : UUID("e0037f48-d93d-4796-b96e-19fbcd1125da") &#125;
 MongoDB server version: 4.2.0
 Welcome to the MongoDB shell.
 For interactive help, type "help".
@@ -634,7 +634,7 @@ mongodb
 [root@localhost ansible]# docker exec -it mongodb mongo
 MongoDB shell version v4.2.0
 connecting to: mongodb://127.0.0.1:27017/?compressors=disabled&gssapiServiceName=mongodb
-Implicit session: session { "id" : UUID("0c7af1af-94e2-43e3-b101-5d5eb966b567") }
+Implicit session: session &#123; "id" : UUID("0c7af1af-94e2-43e3-b101-5d5eb966b567") &#125;
 MongoDB server version: 4.2.0
 Welcome to the MongoDB shell.
 For interactive help, type "help".
