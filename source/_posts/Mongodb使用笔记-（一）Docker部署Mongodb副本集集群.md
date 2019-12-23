@@ -1,6 +1,5 @@
 # Docker部署Mongodb副本集集群
 
-@[toc]
 ## 1. Mongodb简介
 
 	目前常用的数据库主要分为两种：关系型数据库、非关系型数据库。其中关系型数据库常见的包括：Oracle、Mysql、PostgreSQL、SqlSever等，其主要特点就是大多数都遵循SQL（结构化查询语言，Structured Query Language）标准，针对结构化的数据支持比较好，十分注重数据操作的事务性、一致性。而非关系型数据库（NoSQL）特点则是非关系型数据支持比较好，多用于追求速度、高扩展性、多应用场景的项目。
